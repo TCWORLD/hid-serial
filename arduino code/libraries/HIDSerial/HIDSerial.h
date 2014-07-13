@@ -4,7 +4,7 @@
 #include "Arduino.h"
 #include "Print.h"
 
-#define HIDSERIAL_INBUFFER_SIZE 32
+#define HIDSERIAL_INBUFFER_SIZE 8
 
 class HIDSerial : public Print {
 public:

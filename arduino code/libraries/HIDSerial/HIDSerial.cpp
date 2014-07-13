@@ -55,13 +55,15 @@ uchar   usbFunctionWrite(uchar *data, uchar len)
         bytesRemaining -= len;
         //int start = (pos==inBuffer)?1:0;
         for(i=0;i<len;i++) {
-            if (data[i]!=0) {
+            if (data[i]!=255) {
                 *pos++ = data[i];
-             }
+            } else {
+                bytesRemaining = 0;
+                break;
+            }
         }
         if (bytesRemaining == 0) {
             received = 1;
-            *pos++ = 0;
             return 1;
         } else {
             return 0;
@@ -129,12 +131,11 @@ uchar HIDSerial::read(uchar *buffer)
 {
     if(received == 0) return 0;
     int i;
-    for(i=0;inBuffer[i]!=0&&i<HIDSERIAL_INBUFFER_SIZE;i++)
+    for(i=0;inBuffer[i]!=255&&i<HIDSERIAL_INBUFFER_SIZE;i++)
     {
         buffer[i] = inBuffer[i];
     }
-    inBuffer[0] = 0;
-    buffer[i] = 0;
+    inBuffer[0] = 255;
     received = 0;
     return i;
 }
@@ -145,7 +146,7 @@ size_t HIDSerial::write(uint8_t data)
   while(!usbInterruptIsReady()) {
     usbPoll();
   }
-  memset(outBuffer, 0, 8);
+  memset(outBuffer, 255, 8);
   outBuffer[0] = data;
   usbSetInterrupt(outBuffer, 8);
   return 1;
@@ -158,7 +159,7 @@ size_t HIDSerial::write8(const uint8_t *buffer, size_t size)
   while(!usbInterruptIsReady()) {
     usbPoll();
   }
-  memset(outBuffer, 0, 8);
+  memset(outBuffer, 255, 8);
   for(i=0;i<size && i<8; i++) {
     outBuffer[i] = buffer[i];
   }
